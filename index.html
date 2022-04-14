@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Owen Trueblood</title>
+
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+    .vimeo-wrapper {
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       z-index: -1;
+       pointer-events: none;
+       overflow: hidden;
+    }
+
+    .vimeo-wrapper iframe {
+       width: 100vw;
+       height: 56.25vw; /* Given a 16:9 aspect ratio, 9/16*100 = 56.25 */
+       min-height: 100vh;
+       min-width: 177.77vh; /* Given a 16:9 aspect ratio, 16/9*100 = 177.77 */
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%);
+    }
+
+    .linkbox {
+      float: left;
+
+      margin-top: 5%;
+      margin-left: 5%;
+      padding: 0 1em 1em 1em;
+
+      color: white;
+      font-family: 'Open Sans', sans-serif;
+
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    a:link {
+      color: lightcoral;
+    }
+
+    a:visited {
+      color: lightcoral;
+    }
+
+    .space-holder {
+      display: flex;
+      align-items: center;
+    }
+
+    .grow-line {
+      min-width: 10px;
+      flex-grow: 1;
+      border-bottom: 2px solid white;
+      margin-left: 0.5em;
+      margin-right: 0.5em;
+    }
+  </style>
+  </head>
+  <body>
+    <div class="vimeo-wrapper">
+       <iframe src="https://player.vimeo.com/video/623836860?h=02f3072799&background=1&autoplay=1&loop=1&byline=0&title=0"
+               frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+    </div>
+    <div class="linkbox">
+      <h1>Owen Trueblood</h1>
+      <p>Art and engineering</p>
+      <table>
+        <tr><td><div class="space-holder"><a href="https://github.com/jmpinit">github.com</a><span class="grow-line" /></div></td><td>software projects</td></tr>
+        <tr><td><div class="space-holder"><a href="https://hackaday.io/owen">hackaday.io</a><span class="grow-line" /></div></td><td>hardware projects</td></tr>
+        <tr><td><div class="space-holder"><a href="https://www.instagram.com/jmpinit/">instagram.com</a><span class="grow-line" /></div></td><td>projects in progress</td></tr>
+        <tr><td><div class="space-holder"><a href="https://www.are.na/owen-trueblood">are.na</a><span class="grow-line" /></div></td><td>research</td></tr>
+        <tr><td><div class="space-holder"><a href="https://archive.owentrueblood.com">archive</a><span class="grow-line" /></div></td><td>old projects</td></tr>
+      </table>
+      <p>Contact: <a href="mailto: hi@owentrueblood.com">hi@owentrueblood.com</a></p>
+    </div>
+  </body>
+</html>
