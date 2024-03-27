@@ -1,0 +1,220 @@
+---
+title: Reading "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware"
+date: 2024-03-27
+tags: robotics aloha
+---
+
+I'm looking at ALOHA, "A Low-cost Open-source Hardware System for Bimanual
+Teleoperation", and ACT, Action Chunking with Transformers. I want to understand
+it enough to get it working with a different robot on my own tasks.
+
+Take a look at the [ALOHA website](https://tonyzhaozh.github.io/aloha/) to get a
+sense of what it's about.
+
+# Why This Research Seems Cool
+
+* Learns from relatively few demonstrations (e.g. 10 min of demos)
+* Can execute fiddly tasks that require mm-scale precision
+* Robot learns how to get itself back on track when small mistakes happen
+* Easy to reproduce
+    * Working code is provided
+    * Only uses cameras for sensing (no force feedback sensors)
+    * No camera calibration required
+    * Works with low cost robots
+    * Can be trained in a reasonable time on commodity hardware
+    * Easily adaptable to other robots
+* The paper is written in an approachable way with intuitive explanations given
+
+Basically, it can do cool-enough stuff and the authors dumbed it down enough
+that it feels accessible to me, even though presently my machine learning
+knowledge is weak.
+
+## Key Insights
+
+### Action Chunking Reduces the Compounding Error Problem
+
+There is a general problem in imitation learning where compounding errors build
+up as tasks are executed. If something unexpected happens it may push the system
+into a situation it hasn't seen before, and then it doesn't know what to do to
+get back into familiar territory and keeps making mistakes, which pushes it even
+further out of the familiar. This can very quickly lead to complete failure.
+
+The authors here propose an approach where actions are "chunked". The system
+predicts groups of actions instead of each discrete action individually (where
+an action here means setting the joint position targets for the robot arms). A
+significant limitation is that the chunk size (called *k* in the paper) is
+fixed, so it must be chosen to fit the context where the system will be used.
+The paper goes into some exploration of what a good chunk size is for the ALOHA
+system and what likely affects it[^1].
+
+The authors also suggest that chunking might help deal with the roundabout and
+varying ways that humans get to the goal when they are demonstrating a task.
+Normally that poses problems because the imitation learning models do best with
+Markovian systems(?[^2]). The way I understood this is that a chunk of actions
+ends up hiding any non-Markovian behavior within the chunk. I had to remind
+myself of what "Markovian" means - The chance we end up at a particular state
+next only depends on the state we are at now, and not on the path we took to get
+to the present state. It means the process is "memory-less".
+
+If we are doing a task like putting on a shoe then we are going to
+1. Pick up the shoe
+2. Put the shoe on the foot
+3. Tie the shoe laces
+
+But when we are training the system to do this the actions that it "sees" are on
+the level of
+1. Set the joint targets to [0.12, 1.231, 0.53, 0.612, 0.5, 1.51]
+2. Set the joint targets to [2.575, 1.44, 1.868, 0.592, 1.568, 0.789]
+3. Set the joint targets to [0.754, 0.451, 1.454, 1.719, 0.875, 0.188]
+4. ... 50 times per second until we pick up the shoe, then put it on, then ...
+
+A human demonstrating the task might get to the goal via many different action
+sequences. Maybe one of the times they pause in the middle and the other times
+they don't. That kind of thing means that the demonstration data is
+non-Markovian[^2], because the most likely next action in the sequence is
+different depending on the trajectory traced by the previous actions.
+
+My vague hand-wavy sense of what's going on is that the transformer part of ACT
+is effectively compressing the fine-grained action sequences (joint angle
+targets in the second list), which are likely not Markovian, into the bigger
+task-conceptual chunks (first list) which are likely Markovian. Then you can use
+a single-step policy on that level effectively. <-- *I'm just assembling bits and
+pieces here without deep understanding. I think I need to go understand a bunch
+of other stuff in more detail, like Transformers, and come back to this topic. I
+can't tell whether this idea is a key insight of the paper or is already common
+knowledge? And I don't understand / have intuition about why a Transformer would
+be well-suited to this role.*
+
+---
+
+Interestingly, the authors showed that you can take the action chunking idea and
+insert it into other methods (like [BC-ConvMLP](https://proceedings.mlr.press/v164/florence22a.html)[^3]) and get better performance. I wonder if anyone else has
+explored the same idea and just described it differently? How would I find those
+papers? I don't have enough contextual knowledge to think of what to search for
+yet.
+
+---
+
+I don't know if there is a deep connection here, but reading about the benefits
+of chunking in ACT reminded me of this comment:
+
+"I think we have the capacity to do original thought and then maybe later
+compile that into some kind of programming. In the same way, a chef goes to
+their test kitchen and figures stuff out. And then they write a recipe. And
+that's what you download from the Internet. I think we're doing that kind of
+thing all the time. And I think that very much speaks to Eb's point about the
+difference between language and thought and why we have a dissociation between
+those things. Because if we just had language, we wouldn't have the sort of test
+kitchen of the mind that we really need to have all of our flexibility." --
+[Samuel J. Gershman, CBMM10 Panel: Language and
+Thought](https://youtu.be/_yMN-t6zMPg?t=5076)
+
+It also reminds me of [Natural language instructions induce compositional
+generalization in networks of
+neurons](https://www.nature.com/articles/s41593-024-01607-5). It feels like
+language is a very powerful tool in the overall toolkit of intelligence,
+especially when looked at broadly as sequences of symbols that can be used to
+compress for storage and communicate the result of learning.
+
+### Temporal Ensembling
+
+Chunking actions would lead to disjoint motion, so the authors propose smoothing
+out execution by averaging across overlapping action chunks. An exponential
+weighting scheme is applied to them which can be used to adjust how quickly new
+observations are incorporated.
+
+Implemented in the code [here](https://github.com/tonyzhaozh/act/blob/742c753c0d4a5d87076c8f69e5628c79a8cc5488/imitate_episodes.py#L250-L259).
+
+# Reviewing the Code
+
+[ACT repo](https://github.com/tonyzhaozh/act)
+
+It adapts [DETR](https://github.com/facebookresearch/detr), which is "End-to-End
+Object Detection with Transformers" from Meta. DETR stands for Detection
+Transformer. It looks like this is where the CVAE is defined, but I'm not ready
+to pick apart the details of that. The paper says the CVAE is used "to generate
+an action sequence conditioned on current observations" to get the "policy to
+focus on regions where high precision matters".
+
+*CVAE decoder*: z + images + joint positions -> action sequence
+
+The CVAE seems to be very important for learning from human demonstrations,
+because the success rate went down by 33% when they tested a system omitting it.
+
+I found [this CVAE
+tutorial](https://ijdykeman.github.io/ml/2016/12/21/cvae.html) to be helpful for
+learning the basics (all I have for now). You can match things up from here to
+the DETR code and `ACTPolicy` in **[act/policy.py](https://github.com/tonyzhaozh/act/blob/742c753c0d4a5d87076c8f69e5628c79a8cc5488/policy.py)**.
+
+The optimizer is [AdamW](https://paperswithcode.com/method/adamw), which I
+understand to be a very common / generic choice.
+
+# Anything Interesting in the References?
+
+## Reading List
+* [Causal Confusion in Imitation Learning](https://proceedings.neurips.cc/paper_files/paper/2019/hash/947018640bf36a2bb609d3557a285329-Abstract.html)
+* [RT-1: Robotics Transformer for Real-World Control at Scale](https://arxiv.org/abs/2212.06817)
+* [Implicit Behavioral Cloning](https://proceedings.mlr.press/v164/florence22a.html)
+    * Describes BC-ConvMLP, which was referenced as the simplest and most widely used baseline for imitation learning
+* [Vision-Based Multi-Task Manipulation for Inexpensive Robots Using End-to-End Learning from Demonstration](https://ieeexplore.ieee.org/abstract/document/8461076)
+    * Compare this to ALOHA? Also demonstrates with low cost robots.
+* [A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning](https://proceedings.mlr.press/v15/ross11a) aka DAgger
+* [BC-Z: Zero-Shot Task Generalization with Robotic Imitation Learning](https://sites.google.com/view/bc-z/home?pli=1)
+    * Uses DAgger
+    * Google robot
+    * 18k demos!
+    * Some generalization
+* [Grasping with Chopsticks: Combating Covariate Shift in Model-free Imitation Learning for Fine Manipulation](https://homes.cs.washington.edu/~bboots/files/Chopsticks.pdf)
+
+## Fun
+
+* [Robot peels banana with deep learning](https://www.youtube.com/watch?v=rYrSQ_sF3fQ)
+* [ALVINN: An Autonomous Land Vehicle in a Neural Network](https://proceedings.neurips.cc/paper/1988/hash/812b4ba287f5ee0bc9d43bbf5bbe87fb-Abstract.html)
+    * I think I remember seeing this on the History channel when I was a kid?
+    * [History Channel 1998 : Driverless Car Technology Overview at Carnegie Mellon University](https://www.youtube.com/watch?v=2KMAAmkz9go)
+    * This would be fun and quick to reproduce as a learning exercise
+
+# Closely Related Work
+
+* [Mobile ALOHA](https://mobile-aloha.github.io/) - ALOHA on wheels
+* [Universal Manipulation Interface](https://umi-gripper.github.io/) - Collect
+training data for behavior cloning without robots
+
+# Examples of Adapting ACT
+
+* [Aloha World! Teaching a robot arm to
+  wave](https://www.youtube.com/watch?v=U53093H2Qfk) - A YouTube video walking
+  through the process of adapting the ALOHA/ACT work to a new robot system and
+  teaching it to wave at a stuffed monkey toy.
+* [SculptBot](https://sites.google.com/andrew.cmu.edu/sculptbot/home) - Adapts
+ACT to train a robot to sculpt clay into target shapes. Found by looking at the
+forks of the ACT repo.
+
+# Next Steps
+
+1. Build my own teleoperated robot setup to use instead of ALOHA.
+2. Adapt ACT for use with my system.
+3. Try it out with some tasks.
+4. Move onto Mobile ALOHA and try to understand what was added/changed/etc.
+Ditto for Universal Manipulation Interface.
+
+# Footnotes
+
+[^1]: How does the appropriate value of `k` change in other problem contexts?
+How does the level of dynamic behavior relate to the value of `k`? Does it have
+to do with the level of unpredictability of translating actions into the
+environment? Maybe `k` can be bigger when that unpredictability is less? How
+could the benefit of action chunking be generalized in a way that doesn't
+requires choosing a fixed size? Is there more inspiration that could be pulled
+from psychology for that? What does action chunking look like down in biology
+rather than psychology?
+[^2]: I don't really understand this yet - why exactly does Markovian behavior
+matter so much in the context of imitation learning techniques, or more broadly
+in RL? Do all the techniques we have look like Markov models if you squint or
+something? I'm naive here for now. The paper referenced [Causal Imitation
+Learning under Temporally Correlated
+Noise](https://proceedings.mlr.press/v162/swamy22a.html) when talking about the
+issue of non-Markovian data, so maybe that's a place to look next.
+[^3]: I didn't immediately find a reference for BC-ConvMLP and I can't tell
+whether the paper referenced is explaining the same thing that the ALOHA paper
+authors are referencing. Might need revisiting / more exploration.
