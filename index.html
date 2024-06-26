@@ -10,7 +10,7 @@
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 
-    .vimeo-wrapper {
+    .video-wrapper {
        position: fixed;
        top: 0;
        left: 0;
@@ -21,7 +21,7 @@
        overflow: hidden;
     }
 
-    .vimeo-wrapper iframe {
+    .video-wrapper video {
        width: 100vw;
        height: 56.25vw; /* Given a 16:9 aspect ratio, 9/16*100 = 56.25 */
        min-height: 100vh;
@@ -68,9 +68,8 @@
   </style>
   </head>
   <body>
-    <div class="vimeo-wrapper">
-       <iframe src="https://player.vimeo.com/video/623836860?h=02f3072799&background=1&autoplay=1&loop=1&byline=0&title=0"
-               frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+    <div class="video-wrapper">
+      <video src="project-reel.mp4" autoplay loop muted playsinline></video>
     </div>
     <div class="linkbox">
       <h1>Owen Trueblood</h1>
