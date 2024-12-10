@@ -3,10 +3,18 @@
   <head>
     <meta charset="utf-8">
     <title>{{ page.title }}</title>
+    <style>
+      img {
+        max-width: 50%;
+      }
+    </style>
   </head>
   <body>
-    <h1>{{ page.title }}</h1>
-    <b>{{ page.date | date: "%Y %B %-d" }}</b>
+    <header>
+      <h1>{{ page.title }}</h1>
+      <div><b>by <a href="https://owentrueblood.com">Owen Trueblood</a></b></div
+      <div><b>{{ page.date | date: "%Y %B %-d" }}</b></div>
+    </header>
     {{ content }}
   </body>
 </html>
