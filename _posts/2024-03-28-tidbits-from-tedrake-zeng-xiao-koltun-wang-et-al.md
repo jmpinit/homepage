@@ -2,6 +2,7 @@
 title: Tidbits from Tedrake, Zeng, Xiao, Koltun, and Wang et al.
 date: 2024-03-28
 tags: robotics ml
+layout: post
 ---
 
 I spent the whole day just following my curiosity watching lectures and reading
