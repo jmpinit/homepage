@@ -39,7 +39,7 @@ everything.
 - A drive shaft runs through the whole top and comes out one end in a knob that
 lets the user turn it by hand if needed. A belt connects it to a motor that can
 rotate it in normal operation. Everything on top is driven off of this shaft.
-It's providing both energy and a clock for the mechanisms.
+It's providing both energy and synchronization for the mechanisms.
 - Various break-beam sensors and microswitches are used by the electronics to
 understand the state of the machine. For example: to see if the thread is in
 tension or not.
@@ -181,7 +181,7 @@ So how do the 10 signals coming in over that connector turn into the bazillion
 signals going to the rows and columns of pixels in the glass part? To answer
 that we need to figure out what those big chips are doing.
 
-The three on the left are the same part, LC7941ND dot-matrix LCD drivers. The
+The three on the left are the same part, the LC7941ND dot-matrix LCD driver. The
 last one on the right (closest to the connector) is an LC794<b>2</b>ND, which is
 also a dot-matrix LCD driver. These are members of a little family of parts from
 Sanyo which are intended to work together to drive a display like this. The
@@ -191,10 +191,10 @@ From reading the datasheet for these parts I know that each of them has 80
 outputs which can go to an LC display. The application architecture diagram from
 the LC7942ND datasheet gives a hint that that last part is meant to drive the
 rows and the other three are meant to drive the columns. Just considering the
-column drivers, 80x3=240, so we probably have 240 columns, which passes the gut
-check of just looking at the display aspect ratio (it's not too far off from
-being 3 times wider than it is tall). Maybe we have 80 rows then, but also maybe
-less.
+outputs of the column drivers, 80x3=240, so we probably have 240 columns, which
+passes the gut check of just looking at the display aspect ratio (it's not too
+far off from being 3 times wider than it is tall). Maybe we have 80 rows then,
+but also maybe less.
 
 Another thing we know from the datasheets is that these chips have
 shift-registers in them, which basically just means that they are connected in a
@@ -285,8 +285,8 @@ everything makes sense! Here are the steps to update the display:
 3. Loop for 64 rows. The active row will get shifted down each time (we are
    clocking in 0 for the row data, so the 1 we sent at the start is just moving
    on down the shift register).
-4. The entire display has been updated! But uh oh - the pixels are fading fast.
-   Do it all again! Every 12.2ms forever.
+4. All the crystals in the pixels of our desired image have been wiggled! But uh
+   oh - they're fading fast now. Better do it all again! Every 12.2ms forever.
 
 With our newfound understanding we have some new powers. First, we can take the
 data about the signals the logic analyzer captured, dump it to a CSV, and then
