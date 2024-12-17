@@ -72,7 +72,7 @@ In essence what happens during PCR is that you pull the DNA helix apart...
 ------------------------------
 ```
 
-Then you attach little sections of single stranded DNA, called primers, to mark
+Then you attach little sections of single-stranded DNA, called primers, to mark
 the spots where you want to copy the DNA. They are short, but long enough that
 they uniquely fit the points in the sequence that you care about:
 
@@ -88,14 +88,14 @@ they uniquely fit the points in the sequence that you care about:
 ----~   `-~ `---------------------~   `-~ `------
 ```
 
-Now you let loose the DNA polymerase. In living organisms they go around
-repairing DNA. In the previous steps we basically broke all of the DNA and then
-fixed a tiny section of it. The DNA polymerase finds one of the spots where the
-DNA stops being double stranded and then starts running along the single strand,
-pulling free nucleotides from the surrounding solution and plugging them into
-their partners to complete the double strand. So when they finish the two halves
-of our original DNA strand have been "repaired" into two new segments of
-double-stranded DNA:
+Now you let loose the DNA polymerase. In living organisms one of the roles they
+play is to go around repairing DNA. In the previous steps we basically made it
+look like all of the DNA needs repairing, except for the tiny sections where the
+primers have attached. The DNA polymerase finds one of those spots to start from
+and then starts running along the single strand, pulling free nucleotides from
+the surrounding solution and plugging them into their partners to complete the
+double strand. So when they finish the two halves of our original DNA strand
+have been "repaired" into two new segments of double-stranded DNA:
 
 
 ```
@@ -110,9 +110,9 @@ double-stranded DNA:
 ----~   `-~ `-`   `-~ `-`   `-~ `------
 ```
 
-After running this process a single time we have doubled our DNA. If we run it
-again we will end up with 4x what we started with, then 8x, etc. Part of why PCR
-is so powerful is that it is an exponential growth process.
+After running this process a single time we have basically doubled our DNA. If
+we run it again we will end up with 4x what we started with, then 8x, etc. Part
+of why PCR is so powerful is that it is an exponential growth process.
 
 But there is a slight wrinkle at the beginning which I elided in the explanation
 above. The process wouldn't start with a single strand of DNA in isolation. We
@@ -135,7 +135,7 @@ of our desired section will only result in more copies of our desired section.
 
 So after many rounds of this process the copies of our desired section come to
 dominate the mix. If we run 40 cycles we will have trillions of our desired
-section (amplification of 2^40) and a negligible number of the errant copies.
+section (amplification of ~2^40) and a negligible number of the errant copies.
 
 ## Thermocycling
 
@@ -147,16 +147,19 @@ to repeat the same steps for every cycle over the course of many hours.
 
 That all changed with the discovery of Taq polymerase, [which was found in a
 bacterium called Thermus aquaticus] that likes to live in hot springs. Taq pol
-can survive temperatures that break apart DNA into single strands, which is
-a process called denaturing. It allowed PCR to be automated and carried out
-cheaply, because everything could be mixed together at the beginning and then
-run through the amplification cycles just by changing the temperature. PCR with
-Taq pol proceeds like this:
+can survive temperatures that break apart DNA into single strands, which is a
+process called denaturing. It allowed PCR to be automated and carried out
+cheaply. Everything could be mixed together at the beginning and then run
+through the amplification cycles just by changing the temperature without
+worrying about destroying the polymerase and needing to add more. PCR with Taq
+pol proceeds like this:
 
 [which was found in a bacterium called Thermus aquaticus]: https://doi.org/10.1128/jb.127.3.1550-1557.1976
 
 1. Lyse (pop / break up) your sample cells to free the DNA inside.
-2. Spin it down in a centrifuge to separate out most of the non-DNA gunk.
+2. Spin it down in a centrifuge to separate out most of the non-DNA gunk. The
+   gunk mostly ends up in a pellet at the bottom and the rest in the supernatant
+   liquid above.
 3. Take the DNA-rich supernatant and mix it with your primers, Taq pol, free
    nucleotides, and magnesium ions (needed to stabilize some intermediate
    bonds).
@@ -164,7 +167,7 @@ Taq pol proceeds like this:
    strands).
 5. Lower the temperature to let the primers attach, which is called annealing.
 6. Raise the temperature again so Taq pol can do its work extending the other
-   half of the DNA starting from the primers.
+   half of the target DNA section starting from the primers.
 7. Repeat from step 4 many times, essentially doubling the target segment of DNA
    each time.
 8. Now you have a ton of copies of a your desired section of DNA to send off for
@@ -181,7 +184,7 @@ thermocycler.
 The thermocycler just needs to do a few things:
 
 - Heat and cool the PCR samples quickly (a few Celsius/s)
-- Accurately hit target temperatures (e.g. +/- 0.5 C)
+- Accurately hit target temperatures (+/- 0.5 C)
 - Have a working temperature range up to about 100 C
 - Follow a programmable schedule of temperatures over a few hours
 
@@ -234,10 +237,10 @@ I got adhesive-backed heater PCBs off of Amazon.
 
 ![](/assets/pcr-thermocycler-heatblock-heater-sensor.jpg)
 
-I crudely attached an MCP9808 digital temperature sensor to the bottom with
-polyimide tape. It's accurate to about 0.25C across the temperature range
-relevant for PCR. For the final design I am planning to integrate it into the
-heater PCB.
+I crudely attached an MCP9808 digital temperature sensor breakout board to the
+bottom with polyimide tape. It's accurate to about +/-0.25C across the
+temperature range relevant for PCR. For the final design I am planning to
+integrate it into the heater PCB.
 
 ![](/assets/pcr-thermocycler-prototype-mech.jpg)
 
@@ -260,23 +263,24 @@ the concentration of the mix in the tube, leading to unreliable results.
 
 The prototype electronics are very simple. I used a TinyS3 dev board from
 Unexpected Maker because it includes an ESP32-S3, which is the SoC I intend to
-use for the final design. IRLB8721 MOSFETs are used to turn the heaters on or
-off. The fan includes a PWM controller making it easy to adjust the speed from
-the dev board.
+use for the final design. IRLB8721 NPN MOSFETs are used to turn the heaters on
+or off. The fan includes a PWM controller making it easy to adjust its speed
+from the dev board.
 
-For trying it out I implemented a basic PID controller which looks at the
-temperature reported by the MCP9808 and adjusts PWM outputs for the fan and
-heaters to try to hit a target temperature which is adjusted over USB serial. A
+To make it track a target temperature I implemented a basic PID controller which
+looks at the temperature reported by the MCP9808 and adjusts PWM outputs for the
+fan and heaters as needed. The target temperature is adjusted over USB serial. A
 Python script running on my laptop was used to implement the temperature
-schedule for PCR.
+schedule for the PCR run.
 
-This shouldn't work well because the temperature at the MCP9808 will be
-substantially different than the temperature in the sample tubes. To hit the
-temperatures more accurately I'll need to calibrate a model of the heat flow
-through the system and integrate that into the controller. I did some quick
-measurements with a kitchen probe thermometer in sample tubes containing water
-and found that it was within approximately a few C of the targets which is good
-enough for now.
+I didn't expect this setup to work well because the temperature at the MCP9808
+should be substantially different than the temperature in the sample tubes and
+the PID controller won't account for that. To hit the temperatures more
+accurately I'll need to calibrate a model of the heat flow through the system
+and integrate that into the controller. I did some quick measurements with a
+kitchen probe thermometer in sample tubes containing water and found that it was
+within approximately a few C of the targets which seemed good enough to at least
+make a trial PCR run.
 
 ## Testing the Prototype
 
@@ -297,15 +301,17 @@ with the primers and PCR master mix.
 
 [X-Amp]: https://www.ibisci.com/products/x-amp-dna-reagent?variant=31263769559151
 
-After that we loaded the sample tubes into the thermocycler and I ran the cycle
-schedule:
+After that we loaded the sample tubes into the thermocycler and I ran the
+following temperature schedule:
 
-1. Initial denaturation: 60 seconds at 94 C
-2. Denaturing: 30 seconds at 94 C
-3. Annealing: 30 seconds at 58 C
-4. Extension: 30 seconds at 72 C
-5. Repeat 2-4 forty times
-6. Final extension: 120 seconds
+| #  | Step                         | Time        | Temperature |
+|----|------------------------------|-------------|-------------|
+| 1) | Initial denaturation         | 60 seconds  | 94 C        |
+| 2) | Denaturing                   | 30 seconds  | 94 C        |
+| 3) | Annealing                    | 30 seconds  | 58 C        |
+| 4) | Extension                    | 30 seconds  | 72 C        |
+| 5) | Repeat steps 2-4 forty times |             |             |
+| 6) | Final extension              | 120 seconds | 72 C        |
 
 It took about an hour and a half to run through all of the cycles.
 
@@ -316,8 +322,8 @@ in a porous gel that it can move through and apply an electric field it will
 start moving in one direction, but the speed will depend on how long the DNA is
 because the longer it is the more friction there is. So if you wait a while you
 will see bands of DNA of different lengths separate out in the gel. I remember
-seeing pictures of these gels in old crime shows when the investigators would do
-crime scene DNA analysis (it's no longer done that way).
+seeing pictures of these gels as a kid in old crime shows when the investigators
+would do crime scene DNA analysis (it's no longer done that way).
 
 ![](/assets/pcr-thermocycler-gel-bed-prep.jpg)
 
@@ -331,11 +337,11 @@ amplified our DNA.
 <video src="/assets/pcr-thermocycler-gel-bed-run.mp4" loop autoplay controls muted></video>
 
 The buffer liquid that the gel is immersed in contains a stain which makes the
-DNA visible. All of the samples get a blue "loading" dye, but you can see in the
-center two tracks containing the PCR samples there is a lighter color. That's
-the amplified DNA!
-
-So the PCR worked and we were able to amplify mitochondrial DNA from our cheeks!
+DNA visible. All of the samples get a blue "loading" dye which helps keep them
+in place and visually keep track of them while setting up the gel. The actual
+stained DNA is the lighter color that you can see moving downward in the center
+two tracks. Those tracks contained the samples that went through PCR, so we know
+it worked! DNA from our cheeks was successfully amplified.
 
 I was surprised the process was this forgiving. I wasn't really expecting it to
 work at all without dialing in the temperature control more.
