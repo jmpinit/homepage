@@ -3,6 +3,14 @@ title: Owen's Blog
 permalink: /blog/
 ---
 <style>
+.contents {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  gap: 10px;
+}
+
 table {
   border: none;
 }
@@ -16,14 +24,23 @@ tr {
   margin-top: 4em;
 }
 </style>
-<div class="post-list">
-  <table>
-    {% for post in site.posts %}
-    <tr>
-      <td><span>{{ post.date | date: "%Y %B %-d" }}</span></td>
-      <td>-</td>
-      <td><a href="{{ post.url }}">{{ post.title }}</a></td>
-    </tr>
-    {% endfor %}
-  </table>
+<div class="contents">
+  <div class="post-list">
+    <table>
+      {% for post in site.posts %}
+      <tr>
+        <td><span>{{ post.date | date: "%Y %B %-d" }}</span></td>
+        <td>-</td>
+        <td><a href="{{ post.url }}">{{ post.title }}</a></td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div>
+    Want to be notified when I have a new post?
+    <span>
+      One way is to follow me <a href="https://bsky.app/profile/owentrueblood.com">on Bluesky</a>.
+    </span>
+    <span>Or you can add my blog to your feed reader: <a href="feed.xml">feed.xml</a></span>
+  </div>
 </div>
