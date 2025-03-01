@@ -5,9 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page.title }}</title>
     <style>
-      img {
+      /* Base styling */
+      body {
+        font-family: 'Helvetica', 'Arial', sans-serif;
+        line-height: 1.6;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: #fffaf0; /* Soft cream background */
+        color: #4a3000; /* Dark amber text */
+      }
+
+      /* Typography */
+      h1, h2, h3, h4, h5, h6 {
+        color: #995200; /* Amber heading color */
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        border-bottom: 3px solid #ffb732; /* Amber underline */
+        padding-bottom: 0.5rem;
+      }
+
+      h2 {
+        font-size: 2rem;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        margin-bottom: 1.5rem;
+      }
+
+      /* Links */
+      a {
+        color: #cc7000; /* Amber links */
+        text-decoration: none;
+        border-bottom: 1px solid #cc7000;
+        transition: color 0.2s, border-color 0.2s;
+      }
+
+      a:hover {
+        color: #ff8c00; /* Brighter amber on hover */
+        border-color: #ff8c00;
+      }
+
+      /* Images and Video */
+      img, video {
         max-width: 100%;
-        max-height: 50%;
+        height: auto;
+        border-radius: 5px;
+        margin: 2rem 0;
+        border: 1px solid #d9b382; /* Light amber border */
+      }
+
+      /* Code blocks */
+      pre, code {
+        font-family: 'Courier New', monospace;
+        background-color: #fff4e0; /* Light amber background */
+        border-radius: 3px;
+        padding: 0.2rem 0.4rem;
+      }
+
+      pre {
+        padding: 1rem;
+        overflow-x: auto;
+      }
+
+      /* Blockquotes */
+      blockquote {
+        margin-left: 0;
+        padding-left: 1.5rem;
+        border-left: 5px solid #ffb732; /* Amber left border */
+        font-style: italic;
+        color: #6b4700; /* Darker amber */
+      }
+
+      /* Horizontal rule */
+      hr {
+        border: none;
+        height: 2px;
+        background-color: #d9b382; /* Light amber line */
+        margin: 2rem 0;
       }
     </style>
   </head>
