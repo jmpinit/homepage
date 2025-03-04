@@ -70,16 +70,27 @@ While thinking about the light sensor I remembered my old project with the AxiDr
 I realized that there was a way to do a similar thing just by using the light sensor in combination with a projector via
 a technique called "structured light", where you project the information needed for localization into the environment.
 
-The basic idea is to attach a light sensor to the AxiDraw so that it can sense the amount of light coming from above.
-Then point a regular digital projector at the area where you want to make your big drawing and put the AxiDraw down
-somewhere in that area. Now if you were to project a small white square and it happened to light up the sensor you could
-read the sensor value and know that the sensor is somewhere inside the white square in the projected image space. It's
-just a single point so you don't know how the AxiDraw is rotated or how much area it can reach (the scale). But if you
-have the AxiDraw move the light sensor by a known distance and find it again the same way you can use those two points
-to figure out the rotation and scale. At that point you know the 2D pose of the AxiDraw inside of the overall projected
-image. So you can take your big drawing and slice out just the part that the AxiDraw can reach from there and have it
-draw that. Then just pick up the AxiDraw and put it down in an unfinished area of the drawing and repeat to complete the
-whole thing.
+The basic idea is to attach a light sensor to the AxiDraw so that it can sense the amount of light coming from above:
+
+![](/assets/localizing-a-pen-plotter_clothes-pin-sensor.jpg)
+
+Sadly I didn't take any close-up pictures of how I attached the light sensor so you'll have to squint at the cropped
+video frame above. I hot-glued the light sensor on the end of a clothes pin (a scissor-style wood one) and then clamped
+it to the sharpie marker that I used to draw. This got it close to the drawing surface, which was helpful for the next
+steps, but it also added a small offset to the tool that I had to measure and subtract.
+
+Once you have the sensor attached you can point a regular digital projector at the area where you want to make your big
+drawing and put the AxiDraw down somewhere in that area. Now if you were to project a small white square and it happened
+to light up the sensor you could read the sensor value and know that the sensor is somewhere inside the white square in
+the projected image space. It's just a single point so you don't know how the AxiDraw is rotated or how much area it can
+reach (the scale). But if you have the AxiDraw move the light sensor by a known distance and find it again the same way
+you can use those two points to figure out the rotation and scale.
+
+![](/assets/localizing-a-pen-plotter_two-measurements.jpg)
+
+At that point you know the 2D pose of the AxiDraw inside of the overall projected image. So you can take your big
+drawing and slice out just the part that the AxiDraw can reach from there and have it draw that. Then just pick up the
+AxiDraw and put it down in an unfinished area of the drawing and repeat to complete the whole thing.
 
 I left out one key step, which is how we find the light sensor with the white square. You could imagine just sliding it
 in a raster pattern from left to right and top to bottom, stopping when the light sensor detects it. But that's pretty
@@ -120,7 +131,7 @@ Plotting a banner for the p5.axidraw library:
 
 Here's the final p5.js sketch: [Plot by Projection](https://editor.p5js.org/jmpinit/sketches/PxiycDzWG)
 
-<details>
+<!--
 Why did I work on this really?
 
 The safe answer to this for me is always a variation on - I was looking at the things in front of me and saw that I
@@ -137,4 +148,4 @@ coast in my slow orbit through that space I pass through each of those perspecti
 a different emotional tone and character of thinking. The one I was feeling while working on this project was that of
 the individual, trying to find some framework that makes sense of the world they find themselves in. And then keeping
 busy to avoid thinking too hard about the ever-close peril of dissolving back into the environment.
-</details>
+-->
