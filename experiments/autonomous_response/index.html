@@ -1,4 +1,28 @@
-It’s a system that shows QR codes to itself. A screen displays them and a camera pointed at the screen is used to read them. The codes contain instructions for generating further QR codes which may also contain such instructions, creating a feedback loop. The system runs in a loop where it looks for QR codes in the camera image, then evaluates the code in them, then updates the display.
+<h1>Autonomous Response</h1>
 
-Depending on the instructions and initial conditions a variety of patterns may grow and stabilize. The system does not differentiate between codes shown on its own screen or those shown to its camera from other screens or on paper, which allows the audience to interact with the system by showing it their own QR codes.
+<p>The camera is looking for QR codes in its view. Any that are found are mapped
+to into the display coordinates. The content of any detected codes is evaluated
+as Lua. Various functions are made available to access information about the
+environment around the code and to create new codes.</p>
+
+<h2>Example Program</h2>
+
+Here's a program that will create a QR code above the current one if there isn't
+a code already there:
+<pre>
+up()
+if in_qr() then
+  return
+end
+qr(ME)
+</pre>
+
+It can be condensed somewhat by using semicolons:
+<pre>
+up(); if in_qr() then; return; end; qr(ME)
+</pre>
+
+<p>Here it is as a QR code that you could hold up in front of the installation to
+run:</p>
+<img src="qr_up.jpg"></img>
 
