@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page.title }}</title>
+    <link rel="stylesheet" href="{{ '/assets/css/syntax.css' | relative_url }}">
     <style>
       /* Base styling */
       body {
@@ -61,19 +62,6 @@
         border-radius: 5px;
         margin: 2rem 0;
         border: 1px solid #d9b382; /* Light amber border */
-      }
-
-      /* Code blocks */
-      pre, code {
-        font-family: 'Courier New', monospace;
-        background-color: #fff4e0; /* Light amber background */
-        border-radius: 3px;
-        padding: 0.2rem 0.4rem;
-      }
-
-      pre {
-        padding: 1rem;
-        overflow-x: auto;
       }
 
       /* Blockquotes */

@@ -5,6 +5,9 @@ description: >
   systems. As an engineer I develop tools for applying creativity.
 url: https://owentrueblood.com
 
+markdown: kramdown
+highlighter: rouge
+
 kramdown:
   input: GFM
 
