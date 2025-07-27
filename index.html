@@ -37,12 +37,15 @@
 
       margin-top: 5%;
       margin-left: 5%;
-      padding: 0 1em 1em 1em;
+      padding: 1em;
 
       color: white;
       font-family: 'Open Sans', sans-serif;
 
       background-color: rgba(0, 0, 0, 0.5);
+
+      display: flex;
+      flex-direction: column;
     }
 
     a:link {
@@ -53,17 +56,10 @@
       color: lightcoral;
     }
 
-    .space-holder {
-      display: flex;
-      align-items: center;
-    }
-
-    .grow-line {
-      min-width: 10px;
-      flex-grow: 1;
-      border-bottom: 2px solid white;
-      margin-left: 0.5em;
-      margin-right: 0.5em;
+    h1 {
+      margin: 0;
+      white-space: nowrap;
+      text-decoration: underline;
     }
   </style>
   </head>
@@ -74,12 +70,10 @@
     <div class="linkbox">
       <h1>Owen Trueblood</h1>
       <table>
-        <tr><td><div class="space-holder"><a href="/about">/about</a><span class="grow-line" /></div></td><td>what I do</td></tr>
-        <tr><td><div class="space-holder"><a href="https://www.are.na/owen-trueblood/i-made-this-ok6cdwxbmq0">I made this</a><span class="grow-line" /></div></td><td>project feed</td></tr>
-        <tr><td><div class="space-holder"><a href="https://github.com/jmpinit">github.com</a><span class="grow-line" /></div></td><td>code</td></tr>
-        <tr><td><div class="space-holder"><a href="project-reel.mp4">project reel</a><span class="grow-line" /></div></td><td>the background</td></tr>
+        <tr><td><a href="mailto: hi@owentrueblood.com">hi@owentrueblood.com</a></td></tr>
+        <tr><td><a href="/about">/about</a></td></tr>
+        <tr><td><a href="/blog">/blog</a></td></tr>
       </table>
-      <p>Contact: <a href="mailto: hi@owentrueblood.com">hi@owentrueblood.com</a></p>
     </div>
   </body>
 </html>
