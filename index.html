@@ -11,25 +11,25 @@
     @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 
     .video-wrapper {
-       position: fixed;
-       top: 0;
-       left: 0;
-       width: 100%;
-       height: 100%;
-       z-index: -1;
-       pointer-events: none;
-       overflow: hidden;
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+
+      --focal-x: 50%;
+      --focal-y: 50%;
     }
 
     .video-wrapper video {
-       width: 100vw;
-       height: 56.25vw; /* Given a 16:9 aspect ratio, 9/16*100 = 56.25 */
-       min-height: 100vh;
-       min-width: 177.77vh; /* Given a 16:9 aspect ratio, 16/9*100 = 177.77 */
-       position: absolute;
-       top: 50%;
-       left: 50%;
-       transform: translate(-50%, -50%);
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+
+      /* Let the browser fill and crop while steering the crop from JS with object-position */
+      object-fit: cover;
+      object-position: var(--focal-x) var(--focal-y);
     }
 
     .linkbox {
@@ -65,7 +65,7 @@
   </head>
   <body>
     <div class="video-wrapper">
-      <video src="project-reel.mp4" autoplay loop muted playsinline></video>
+      <video id="video-reel" src="project-reel.mp4" autoplay loop muted playsinline></video>
     </div>
     <div class="linkbox">
       <h1>Owen Trueblood</h1>
@@ -75,5 +75,99 @@
         <tr><td><a href="/blog">/blog</a></td></tr>
       </table>
     </div>
+    <script>
+      const video = document.querySelector('.video-wrapper video');
+
+      const focalTrack = [
+        { t: 0.0, x: 693 / 1280 }, // Painting at MIT
+        { t: 108 / 30, x: 625 / 1280 }, // Painting with Jeff's machine using Vive Tracker
+        { t: 266 / 30, x: 460 / 1280 }, // Printing sculpture
+        { t: 406 / 30, x: 675 / 1280 }, // Riding Slugbase down hallway
+
+        // Telepainting with Harold
+        { t: 520 / 30, x: 265 / 1280, curve: 'linear' },
+        { t: 560 / 30, x: 1007 / 1280 },
+
+        { t: 725 / 30, x: 668 / 1280 }, // Black Square
+        { t: 984 / 30, x: 668 / 1280 }, // Mug scan
+        { t: 984 / 30, x: 668 / 1280 }, // Mug scan
+        { t: 1215 / 30, x: 523 / 1280 }, // Animating UR5 from Blender
+
+        // Painting using ARCore + KR 16
+        { t: 1322 / 30, x: 1020 / 1280, curve: 'linear' },
+        { t: 1400 / 30, x: 377 / 1280 },
+
+        { t: 1461 / 30, x: 568 / 1280 }, // RoboDK Python painting
+        { t: 1550 / 30, x: 685 / 1280 }, // L3DCube WebSocket control library
+        { t: 1654 / 30, x: 755 / 1280 }, // V-REP Kuka RSI control plugin
+        { t: 1786 / 30, x: 672 / 1280 }, // VLLA
+      ];
+
+      function xByTime(track, t) {
+        // Before start
+        if (t <= track[0].t) {
+          return track[0].x;
+        }
+
+        // After end
+        const n = track.length;
+        if (t >= track[n - 1].t) {
+          return track[n - 1].x;
+        }
+
+        for (let i = 0; i < n - 1; i += 1) {
+          const a = track[i];
+          const b = track[i + 1];
+
+          if (t >= a.t && t <= b.t) {
+            if ('curve' in a) {
+              if (a.curve == 'linear') {
+                const u = (t - a.t) / (b.t - a.t);
+                return a.x + u * (b.x - a.x);
+              }
+            } else {
+              // Default to constant
+              return a.x;
+            }
+          }
+        }
+
+        // Should never reach here, but just in case:
+        return track[n - 1].x;
+      }
+
+      let vfId = null;  // requestVideoFrameCallback id
+      let rafId = null; // requestAnimationFrame id (fallback)
+
+      function scheduleNext() {
+        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+          vfId = video.requestVideoFrameCallback(onFrame);
+        } else {
+          rafId = requestAnimationFrame(() => onFrame());
+        }
+      }
+
+      function cancelScheduled() {
+        if (vfId !== null) { video.cancelVideoFrameCallback(vfId); vfId = null; }
+        if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+      }
+
+      function onFrame(_now, meta) {
+        const t = meta?.mediaTime ?? video.currentTime;
+        const x = 100 * xByTime(focalTrack, t);
+        video.style.setProperty('--focal-x', x.toFixed(3) + '%');
+        scheduleNext();
+      }
+
+      function startSync() { cancelScheduled(); scheduleNext(); }
+      function stopSync() { cancelScheduled(); }
+
+      ['playing', 'seeked', 'loadedmetadata'].forEach(e =>
+        video.addEventListener(e, startSync)
+      );
+      ['pause', 'ended', 'emptied'].forEach(e =>
+        video.addEventListener(e, stopSync)
+      );
+  </script>
   </body>
 </html>
