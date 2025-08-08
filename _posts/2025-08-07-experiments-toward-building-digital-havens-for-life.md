@@ -5,6 +5,8 @@ tags: artificial-life pcb houdini havens
 layout: post
 ---
 
+![](/assets/experiments-toward-building-digital-havens-for-life/grown-pcb-banner.jpg)
+
 # Meetings
 
 As a kid I passed a lot of time in my own head. I went to a Quaker school for the first couple of grades where they
