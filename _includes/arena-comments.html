@@ -1,0 +1,167 @@
+{% assign arena_block_ref = page.arena_block_id | default: page.arena_block_slug | default: page.arena_block %}
+{% if arena_block_ref %}
+{% assign arena_block_ref_escaped = arena_block_ref | uri_escape %}
+{% assign arena_block_url = 'https://www.are.na/block/' | append: arena_block_ref_escaped %}
+
+<section class="arena-comments" aria-label="Comments">
+  <h2>Comments</h2>
+  <p>
+    To leave a comment, you need an Are.na account. Comment on
+    <a href="{{ arena_block_url }}" target="_blank" rel="noopener noreferrer">this post&rsquo;s Are.na block</a>
+    and it will appear here.
+  </p>
+
+  <noscript>
+    <p>
+      Comments load with JavaScript. You can still read and leave comments directly on
+      <a href="{{ arena_block_url }}" target="_blank" rel="noopener noreferrer">this post&rsquo;s Are.na block</a>.
+    </p>
+  </noscript>
+
+  <div id="arena-comments-status" class="arena-comments-status" aria-live="polite"></div>
+  <div id="arena-comments-list" class="arena-comments-list"></div>
+</section>
+
+<style>
+  .arena-comments {
+    margin: 2rem 0;
+  }
+
+  .arena-comments-status {
+    margin: 0.75rem 0 1rem;
+  }
+
+  .arena-comments-list {
+    border-top: 1px solid #d9b382;
+  }
+
+  .arena-comment {
+    padding: 1rem 0;
+    border-bottom: 1px solid #d9b382;
+  }
+
+  .arena-comment-meta {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .arena-comment-meta a {
+    margin-right: 0.5rem;
+  }
+
+  .arena-comment-body {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 0.9rem;
+  }
+</style>
+
+<script>
+  (function () {
+    const arenaBlockRef = "{{ arena_block_ref | escape }}";
+    const statusEl = document.getElementById("arena-comments-status");
+    const listEl = document.getElementById("arena-comments-list");
+
+    if (!arenaBlockRef || !statusEl || !listEl) {
+      return;
+    }
+
+    function setStatus(message) {
+      statusEl.textContent = message;
+    }
+
+    function renderComment(comment) {
+      const wrapper = document.createElement("article");
+      wrapper.className = "arena-comment";
+
+      const meta = document.createElement("div");
+      meta.className = "arena-comment-meta";
+
+      if (comment && comment.user && comment.user.name) {
+        if (comment.user.slug) {
+          const userLink = document.createElement("a");
+          userLink.href = "https://www.are.na/" + comment.user.slug;
+          userLink.target = "_blank";
+          userLink.rel = "noopener noreferrer";
+          userLink.textContent = "@" + comment.user.name;
+          meta.appendChild(userLink);
+        } else {
+          const userSpan = document.createElement("span");
+          userSpan.textContent = "@" + comment.user.name;
+          meta.appendChild(userSpan);
+        }
+      } else {
+        const unknownUser = document.createElement("span");
+        unknownUser.textContent = "Unknown user";
+        meta.appendChild(unknownUser);
+      }
+
+      if (comment && comment.created_at) {
+        const dateSpan = document.createElement("span");
+        dateSpan.textContent = " • " + new Date(comment.created_at).toLocaleString();
+        meta.appendChild(dateSpan);
+      }
+
+      const body = document.createElement("pre");
+      body.className = "arena-comment-body";
+      body.textContent = (comment && comment.body && comment.body.plain) || "";
+
+      wrapper.append(meta, body);
+      listEl.appendChild(wrapper);
+    }
+
+    async function fetchAllComments(blockRef) {
+      const per = 100;
+      let page = 1;
+      let all = [];
+      const maxPages = 50;
+
+      while (page && page <= maxPages) {
+        const url = new URL("https://api.are.na/v3/blocks/" + encodeURIComponent(blockRef) + "/comments");
+        url.searchParams.set("per", String(per));
+        url.searchParams.set("page", String(page));
+
+        const res = await fetch(url.toString(), {
+          method: "GET",
+          headers: { Accept: "application/json" }
+        });
+
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status + " " + res.statusText);
+        }
+
+        const json = await res.json();
+        const data = Array.isArray(json && json.data) ? json.data : [];
+        all = all.concat(data);
+
+        const nextPage = json && json.meta && json.meta.next_page;
+        page = nextPage ? Number(nextPage) : null;
+      }
+
+      return all;
+    }
+
+    async function loadComments() {
+      setStatus("Loading comments…");
+
+      try {
+        const comments = await fetchAllComments(arenaBlockRef);
+
+        if (!comments.length) {
+          setStatus("No comments yet.");
+          return;
+        }
+
+        comments.forEach(renderComment);
+        setStatus("Loaded " + comments.length + " comment(s).");
+      } catch (error) {
+        setStatus("Could not load comments. View them on Are.na using the link above.");
+      }
+    }
+
+    loadComments();
+  })();
+</script>
+{% endif %}

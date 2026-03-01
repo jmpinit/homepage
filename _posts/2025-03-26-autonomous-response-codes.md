@@ -4,6 +4,7 @@ date: 2025-3-26
 tags: computer-vision amorphous-computing
 layout: post
 description: Self-reproducing QR code agents
+arena_block_id: "44032159"
 ---
 
 ![](/assets/autonomous-response-qr-show.jpg)

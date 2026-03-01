@@ -3,6 +3,7 @@ title: Prototyping an Automatic Tattoo Gun
 date: 2025-1-20
 tags: robotics
 layout: post
+arena_block_id: "44032156"
 ---
 
 ![](/assets/auto-tattoo-gun_prototype-overview.jpg)

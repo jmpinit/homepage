@@ -3,6 +3,7 @@ title: Designing a PCR Thermocycler (Part 1)
 date: 2024-12-14
 tags: biology pcr-thermocycler
 layout: post
+arena_block_id: "44032154"
 ---
 
 The polymerase-chain reaction (PCR) is used to copy DNA, which is also known as
@@ -55,7 +56,7 @@ that eventually became known as the polymerase chain reaction (PCR).
 In essence what happens during PCR is that you pull the DNA helix apart...
 
 ```
--. .-.   .-. .-.   .-. .-.   .  
+-. .-.   .-. .-.   .-. .-.   .
 ||\|||\ /|||\|||\ /|||\|||\ /|
 |/ \|||\|||/ \|||\|||/ \|||\||
 ~   `-~ `-`   `-~ `-`   `-~ `-
@@ -66,9 +67,9 @@ In essence what happens during PCR is that you pull the DNA helix apart...
 
 ```
 ------------------------------
-| | | | | | | | | | | | | | | 
+| | | | | | | | | | | | | | |
 
-| | | | | | | | | | | | | | | 
+| | | | | | | | | | | | | | |
 ------------------------------
 ```
 
@@ -81,7 +82,7 @@ they uniquely fit the points in the sequence that you care about:
 | | ||\|||\ /|| | | | | | | | | | ||\|||\ /| | |
     |/ \|||\||                     / \|||\||
     ~   `-~ `-                    ~   `-~ `-
-                                       
+
     -. .-.   .-                   -. .-.   .
     ||\|||\ /|                     |\|||\ /|
 | | |/ \|||\||| | | | | | | | | | |/ \|||\|| | |
@@ -188,7 +189,7 @@ The thermocycler just needs to do a few things:
 - Have a working temperature range up to about 100 C
 - Follow a programmable schedule of temperatures over a few hours
 
-It's not that hard to accomplish these things nowadays. There are many 
+It's not that hard to accomplish these things nowadays. There are many
 affordable or DIY thermocycler designs out in the world. Here are a few that I've
 looked at:
 

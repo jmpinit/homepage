@@ -3,6 +3,7 @@ title: Reverse Engineering the Brother PE-150 Embroidery Machine
 date: 2024-12-10
 tags: reverse-engineering brother-pe-150
 layout: post
+arena_block_id: "44032150"
 ---
 
 ![](/assets/brother-pe-150-overview.jpg)

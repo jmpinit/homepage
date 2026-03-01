@@ -3,6 +3,7 @@ title: "Experiments Toward Building Digital Havens for Life"
 date: 2025-8-7
 tags: artificial-life pcb houdini havens
 layout: post
+arena_block_id: "44032165"
 ---
 
 ![](/assets/experiments-toward-building-digital-havens-for-life/grown-pcb-banner.jpg)

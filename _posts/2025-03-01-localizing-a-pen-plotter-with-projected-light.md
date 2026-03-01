@@ -3,6 +3,7 @@ title: Localizing a Pen Plotter with Projected Light
 date: 2025-03-01
 tags: robotics axidraw p5.js
 layout: post
+arena_block_id: "44032158"
 ---
 
 ![](/assets/localizing-a-pen-plotter_tiger-near-done.jpg)

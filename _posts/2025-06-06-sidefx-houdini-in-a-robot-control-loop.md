@@ -3,6 +3,7 @@ title: "SideFX Houdini in a Robot Control Loop"
 date: 2025-6-6
 tags: robotics vfx
 layout: post
+arena_block_id: "44032164"
 ---
 
 <style>
