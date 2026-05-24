@@ -2,6 +2,7 @@
 title: "Laser Cyanotypes for Recalculating Route"
 date: 2026-05-24
 layout: post
+arena_block_id: "46453580"
 ---
 
 ![](/assets/laser-in-laser-out/corridor-video-timelapse.gif)
